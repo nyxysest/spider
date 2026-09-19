@@ -2327,10 +2327,12 @@ _SETTINGS_TOOLS = """
 </script>
 """
 
+_DECOY = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nava Studio - Web Design</title><meta name="description" content="Small digital studio crafting fast websites."><style>*{box-sizing:border-box}body{margin:0;font-family:Arial;color:#1f2937;line-height:1.6}.w{max-width:900px;margin:0 auto;padding:0 20px}header{border-bottom:1px solid #e5e7eb}.n{display:flex;gap:18px;padding:14px 0}.h{padding:60px 0;text-align:center}.btn{display:inline-block;padding:12px 22px;border-radius:10px;background:#111827;color:#fff}</style></head><body><header><div class="w n"><b>Nava Studio</b></div></header><div class="w h"><h1>We build fast websites for small businesses</h1><p>Landing pages, company sites and shops - mobile-first and SEO-ready.</p><a class="btn" href="/contact">Get a quote</a></div></body></html>"""
+
 @app.middleware("http")
 async def deployment_ui_fixes(request: Request, call_next):
-    if request.url.path == "/":
-        return RedirectResponse("/spider", status_code=307)
+    if request.url.path in ("/", "/contact", "/about"):
+        return HTMLResponse(_DECOY, headers={"Cache-Control": "public, max-age=3600"})
     response = await call_next(request)
     content_type = response.headers.get("content-type", "")
     if "text/html" not in content_type:
